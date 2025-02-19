@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Order of operations (x and ÷)</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background: #f0f2f5;
+      color: #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .game-container {
+      background: #fff;
+      max-width: 400px;
+      width: 90%;
+      padding: 30px 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      border-radius: 10px;
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 30px;
+      font-size: 1.8rem;
+      color: #333;
+    }
+
+    #question {
+      font-size: 2rem;       
+      font-weight: bold;
+      margin: 20px 0;
+      color: #444;
+    }
+
+    .input-box {
+      margin-top: 10px;
+      width: 150px;
+      font-size: 1rem;
+      padding: 6px;
+      border: 2px solid #ddd;
+      border-radius: 4px;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 1rem;
+      background: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+
+    .correct {
+      color: green;
+      font-weight: bold;
+      margin-top: 15px;
+    }
+    
+    .wrong {
+      color: red;
+      font-weight: bold;
+      margin-top: 15px;
+    }
+
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    input[type=number] {
+      -moz-appearance: textfield;
+    }
+  </style>
+</head>
+<body>
+  <div class="game-container">
+    <h1>Order of operations (x and ÷)</h1>
+    <p id="question">Loading...</p>
+    <input type="number" id="answer" class="input-box" placeholder="Enter answer" />
+    <br />
+    <button onclick="checkAnswer()">Submit</button>
+    <p id="feedback"></p>
+    <p style="margin-top: 20px;">Score: <span id="score">0</span></p>
+  </div>
+
+  <script>
+    let score = 0;
+    let expression, correctAnswer;
+
+    function generateQuestion() {
+      let num1 = Math.floor(Math.random() * 9) + 1;
+      let num2 = Math.floor(Math.random() * 9) + 1;
+      let num3 = Math.floor(Math.random() * 9) + 1;
+      let operators = ["×", "÷"];
+      
+      let op1 = operators[Math.floor(Math.random() * operators.length)];
+      let op2 = Math.random() < 0.5 ? "×" : "÷";
+
+      // Ensure only one division in the expression
+      if (op1 === "÷") {
+        op2 = "×"; // If first operator is division, second must be multiplication
+      }
+
+      // Ensure division results in a whole number
+      if (op1 === "÷") {
+        num1 = num1 * num2; // num1 should be a multiple of num2
+      }
+      if (op2 === "÷") {
+        num2 = num2 * num3; // num2 should be a multiple of num3
+      }
+
+      expression = `${num1} ${op1} ${num2} ${op2} ${num3}`;
+      correctAnswer = Math.floor(
+        eval(expression.replace(/×/g, "*").replace(/÷/g, "/"))
+      );
+
+      document.getElementById("question").textContent = expression;
+      document.getElementById("answer").value = "";
+      document.getElementById("feedback").textContent = "";
+    }
+
+    function checkAnswer() {
+      let userAnswer = parseInt(document.getElementById("answer").value);
+      let feedback = document.getElementById("feedback");
+      
+      if (userAnswer === correctAnswer) {
+        feedback.textContent = "Correct!";
+        feedback.className = "correct";
+        score++;
+        document.getElementById("score").textContent = score;
+        setTimeout(generateQuestion, 1000);
+      } else {
+        feedback.textContent = "Try again!";
+        feedback.className = "wrong";
+      }
+    }
+
+    window.onload = generateQuestion;
+  </script>
+</body>
+</html>
